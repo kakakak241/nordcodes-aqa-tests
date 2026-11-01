@@ -18,7 +18,7 @@ import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMoc
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /** Owns only the application process and WireMock it started. No fixed ports or external services. */
-public final class AppFixture implements BeforeAllCallback, AfterAllCallback,
+public final class AppFixture implements BeforeAllCallback, AfterAllCallback, BeforeTestExecutionCallback,
         BeforeEachCallback, AfterEachCallback, TestExecutionExceptionHandler {
     public static final String API_KEY = "aqa-local-test-secret";
     private static final Pattern PORT = Pattern.compile("Tomcat started on port (\\d+)");
@@ -76,6 +76,41 @@ public final class AppFixture implements BeforeAllCallback, AfterAllCallback,
     @Override
     public void beforeEach(ExtensionContext context) {
         mock.resetAll();
+    }
+
+    @Override
+    public void beforeTestExecution(ExtensionContext context) {
+        Allure.getLifecycle().updateTestCase(result -> {
+            String name = context.getDisplayName()
+                    .replace("LOGIN", "вход").replace("ACTION", "действие").replace("LOGOUT", "выход")
+                    .replace("API-ключ", "ключ доступа")
+                    .replace("токенов", "пользовательских кодов")
+                    .replace("токеном", "пользовательским кодом")
+                    .replace("токену", "пользовательскому коду")
+                    .replace("токена", "пользовательского кода")
+                    .replace("токены", "пользовательские коды")
+                    .replace("токен", "пользовательский код")
+                    .replace("Отклонить action", "Отклонить неизвестное название действия");
+            if (context.getRequiredTestMethod().getName().startsWith("rejectsMissing")) {
+                name = name.replace("token", "код пользователя").replace("action", "название действия");
+            }
+            if (context.getRequiredTestMethod().getName().equals("acceptsSuccessfulExternalStatus")) {
+                name = name.replace("внешний сервис вернул", "внешняя система разрешила операцию, вариант ответа");
+            }
+            if (context.getRequiredTestMethod().getName().equals("handlesExternalErrorsAndCanRecover")) {
+                name = name.replace("внешний сервис вернул ошибку", "внешняя система отказала, вариант ответа");
+            }
+            result.setName(Character.toUpperCase(name.charAt(0)) + name.substring(1));
+            if (result.getDescription() == null || result.getDescription().isBlank()) {
+                result.setDescription(switch (context.getRequiredTestClass().getSimpleName()) {
+                    case "ApiKeyIT" -> "Ключ доступа — общий секрет, который приложение проверяет при каждой операции. Проверяем, что неправильный или отсутствующий ключ не позволяет выполнить операцию и не меняет состояние уже вошедшего пользователя.";
+                    case "TokenValidationIT" -> "Пользовательский код состоит ровно из 32 заглавных латинских букв или цифр. Проверяем допустимые и неподходящие данные. Некорректный запрос должен отклоняться до обращения во внешнюю систему.";
+                    case "SessionLifecycleIT" -> "Проверяем вход пользователя, выполнение действий и выход. После выхода действия должны быть запрещены. Вход и выход одного пользователя не должны влиять на других.";
+                    case "ExternalServiceIT" -> "Внешняя система помогает приложению проверить вход и выполнить действие. В этом сценарии её ответ заранее задан. Проверяем, что приложение верно сообщает пользователю результат и сохраняет правильное состояние входа.";
+                    default -> "Это дополнительный сценарий. Его ожидаемое поведение не уточнено в задании и принято как явное допущение, описанное в README. Результат нельзя считать подтверждением полного исходного требования.";
+                });
+            }
+        });
     }
 
     @Override

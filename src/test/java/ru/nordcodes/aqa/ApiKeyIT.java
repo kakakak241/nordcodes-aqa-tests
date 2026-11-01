@@ -23,7 +23,7 @@ class ApiKeyIT extends ApiTest {
                 Arguments.of(action, "ключ отсутствует", null),
                 Arguments.of(action, "пустой ключ", ""),
                 Arguments.of(action, "неверный ключ", "wrong-key"),
-                Arguments.of(action, "другой регистр", AppFixture.API_KEY.toUpperCase(java.util.Locale.ROOT)),
+                Arguments.of(action, "ключ изменён на заглавные буквы", AppFixture.API_KEY.toUpperCase(java.util.Locale.ROOT)),
                 Arguments.of(action, "ключ из примера вместо настроенного", "qazWSXedc")));
     }
 
@@ -43,7 +43,7 @@ class ApiKeyIT extends ApiTest {
     }
 
     @Test
-    @DisplayName("Регистр имени HTTP-заголовка не влияет на проверку ключа")
+    @DisplayName("Название поля ключа можно писать строчными буквами")
     void acceptsCaseInsensitiveHeaderName() throws Exception {
         successfulServices();
         String token = token();

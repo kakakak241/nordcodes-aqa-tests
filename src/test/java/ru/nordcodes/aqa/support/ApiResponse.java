@@ -15,7 +15,10 @@ public record ApiResponse(int status, String contentType, String body) {
 
     public void isOk(String reason) {
         Allure.step(reason, () -> {
-            assertEquals(200, status, reason + "; тело ответа: " + body);
+            if (status != 200) {
+                fail(reason + ". Ожидалось: операция выполнена. Получено: " + outcome(status)
+                        + ". Запрос и ответ сохранены во вложениях.");
+            }
             JsonNode json = json();
             assertEquals("OK", json.path("result").asText(), "Поле result");
             assertFalse(json.has("message"), "Успешный ответ не должен содержать сообщение об ошибке");
@@ -23,13 +26,28 @@ public record ApiResponse(int status, String contentType, String body) {
     }
 
     public void isError(int expectedStatus) {
-        Allure.step("Получить ошибку HTTP " + expectedStatus + " с описанием причины", () -> {
-            assertEquals(expectedStatus, status, "HTTP-код; тело ответа: " + body);
+        Allure.step("Проверить ожидаемый отказ: " + outcome(expectedStatus), () -> {
+            if (status != expectedStatus) {
+                fail("Ожидалось: " + outcome(expectedStatus) + ". Получено: " + outcome(status)
+                        + ". Технические подробности сохранены во вложениях.");
+            }
             JsonNode json = json();
             assertEquals("ERROR", json.path("result").asText(), "Поле result");
             assertTrue(json.path("message").isTextual(), "message должен быть строкой");
             assertFalse(json.path("message").asText().isBlank(), "Причина ошибки не должна быть пустой");
         });
+    }
+
+    private static String outcome(int status) {
+        return switch (status) {
+            case 200 -> "операция выполнена";
+            case 400 -> "приложение отклонило переданные данные";
+            case 401 -> "доступ запрещён из-за отсутствующего или неверного ключа";
+            case 403 -> "операция недоступна без активного входа";
+            case 409 -> "повторный вход отклонён";
+            case 500 -> "приложение сообщило о невозможности выполнить операцию";
+            default -> "получен непредусмотренный ответ приложения (код " + status + ")";
+        };
     }
 
     private JsonNode json() throws Exception {

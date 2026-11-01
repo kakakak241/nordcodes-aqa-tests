@@ -27,7 +27,7 @@ public abstract class ApiTest {
     }
 
     protected void login(String token) throws Exception {
-        Allure.step("Авторизовать тестовый токен", () -> api().call(token, "LOGIN").isOk());
+        Allure.step("Подготовить пользователя, который уже вошёл в систему", () -> api().call(token, "LOGIN").isOk());
     }
 
     protected void clearRequests() {
@@ -35,7 +35,7 @@ public abstract class ApiTest {
     }
 
     protected void verifyCall(String path, String token) {
-        Allure.step("Проверить единственный POST " + path + " с нужным токеном и заголовками", () ->
+        Allure.step("Внешняя система должна один раз получить " + externalOperation(path) + " с данными этого пользователя", () ->
                 APP.mock().verify(1, postRequestedFor(urlEqualTo(path))
                         .withHeader("Content-Type", containing("application/x-www-form-urlencoded"))
                         .withHeader("Accept", containing("application/json"))
@@ -48,7 +48,11 @@ public abstract class ApiTest {
     }
 
     protected void noCall(String path) {
-        Allure.step("Убедиться, что приложение не обращалось к " + path, () ->
+        Allure.step("Убедиться, что приложение не отправляло во внешнюю систему " + externalOperation(path), () ->
                 APP.mock().verify(0, anyRequestedFor(urlEqualTo(path))));
+    }
+
+    private static String externalOperation(String path) {
+        return path.equals("/auth") ? "запрос на проверку входа" : "запрос на действие пользователя";
     }
 }

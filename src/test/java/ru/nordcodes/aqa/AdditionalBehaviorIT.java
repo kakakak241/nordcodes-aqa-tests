@@ -51,7 +51,7 @@ class AdditionalBehaviorIT extends ApiTest {
         noCalls();
     }
 
-    @ParameterizedTest(name = "Допущение A5: действие «{0}» нормализуется")
+    @ParameterizedTest(name = "Пробелы вокруг названия действия «{0}» не мешают входу")
     @ValueSource(strings = {" LOGIN", "LOGIN ", " LOGIN "})
     @DisplayName("Пробелы по краям действия удаляются")
     void trimsAction(String action) throws Exception {

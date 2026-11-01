@@ -27,7 +27,13 @@ public final class ApiClient {
     }
 
     public ApiResponse call(String token, String action) throws Exception {
-        return form(Map.of("token", token, "action", action), apiKey);
+        String step = switch (action) {
+            case "LOGIN" -> "Войти в систему";
+            case "ACTION" -> "Выполнить действие пользователя";
+            case "LOGOUT" -> "Выйти из системы";
+            default -> "Передать неподходящее название действия";
+        };
+        return Allure.step(step, () -> form(Map.of("token", token, "action", action), apiKey));
     }
 
     public ApiResponse form(Map<String, String> fields, String key) throws Exception {
@@ -38,7 +44,7 @@ public final class ApiClient {
     }
 
     public ApiResponse send(String formBody, String key, String keyHeader) throws Exception {
-        return Allure.step("Отправить POST /endpoint", () -> {
+        return Allure.step("Передать данные приложению и получить ответ", () -> {
             HttpRequest.Builder builder = HttpRequest.newBuilder(endpoint)
                     .timeout(Duration.ofSeconds(8))
                     .header("Content-Type", "application/x-www-form-urlencoded")
