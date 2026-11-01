@@ -162,6 +162,60 @@
           "skipped": 0
         }
       ]
+    },
+    {
+      "label": "Java 17, стандартный отчёт Allure",
+      "java": "17.0.20.1",
+      "startedMoscow": "2026-11-02T00:02:12.452000+03:00",
+      "finishedMoscow": "2026-11-02T00:02:36.047000+03:00",
+      "tests": 147,
+      "passed": 144,
+      "failures": 3,
+      "errors": 0,
+      "skipped": 0,
+      "flakes": 0,
+      "failedCases": [
+        "Допустимый пользовательский код: все допустимые буквы и цифры",
+        "Допустимый пользовательский код: буква G",
+        "Допустимый пользовательский код: буква Z"
+      ],
+      "classes": [
+        {
+          "class": "ru.nordcodes.aqa.AdditionalBehaviorIT",
+          "tests": 7,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        {
+          "class": "ru.nordcodes.aqa.ApiKeyIT",
+          "tests": 18,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        {
+          "class": "ru.nordcodes.aqa.ExternalServiceIT",
+          "tests": 44,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        {
+          "class": "ru.nordcodes.aqa.SessionLifecycleIT",
+          "tests": 8,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        {
+          "class": "ru.nordcodes.aqa.TokenValidationIT",
+          "tests": 70,
+          "failures": 3,
+          "errors": 0,
+          "skipped": 0
+        }
+      ]
     }
   ]
 }
