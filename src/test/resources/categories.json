@@ -1,0 +1,15 @@
+[
+  {
+    "name": "NC-001: приложение отклоняет разрешённые буквы G-Z",
+    "matchedStatuses": ["failed"],
+    "messageRegex": "(?s).*NC-001.*"
+  },
+  {
+    "name": "Другие расхождения с ожидаемым результатом",
+    "matchedStatuses": ["failed"]
+  },
+  {
+    "name": "Проблемы окружения или выполнения теста",
+    "matchedStatuses": ["broken"]
+  }
+]

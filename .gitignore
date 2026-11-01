@@ -1,0 +1,10 @@
+/target/
+/tools/
+/.allure/
+/.idea/
+*.iml
+/app/*.jar
+/*.7z
+/assignment.pdf
+/delivery/
+*.log
