@@ -32,7 +32,7 @@ class TokenValidationIT extends ApiTest {
     @DisplayName("Допустимые токены A-Z0-9 проходят полный цикл сессии")
     @Story("Требование: 32 символа A-Z0-9")
     @Severity(SeverityLevel.CRITICAL)
-    @Description("Пользовательский код — это 32 заглавные латинские буквы или цифры. С любым таким кодом пользователь должен иметь возможность войти, выполнить действие и выйти. Проверенные коды с буквами G-Z отклоняются вопреки этому правилу: ошибка NC-001.")
+    @Description("Код пользователя должен содержать 32 символа: заглавные латинские буквы или цифры. Проверяется вход, действие и выход с таким кодом.")
     void acceptsTokensFromRequiredAlphabet(String label, String token) throws Exception {
         successfulServices();
         api().call(token, "LOGIN").isOk("NC-001: правильный пользовательский код должен позволять войти в систему");
@@ -69,7 +69,7 @@ class TokenValidationIT extends ApiTest {
                 Stream.of(cases).map(c -> Arguments.of(action, c[0], c[1])));
     }
 
-    @ParameterizedTest(name = "{0}: отклонить токен — {1}")
+    @ParameterizedTest(name = "{0}: недопустимый токен ({1})")
     @MethodSource("invalidTokens")
     @DisplayName("Некорректный токен отклоняется до внешнего запроса")
     @Story("Некорректные токены не уходят во внешний сервис")
